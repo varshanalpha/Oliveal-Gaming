@@ -183,3 +183,4 @@ export const AdminLoginPage: React.FC = () => {
     </AuthLayout>
   );
 };
+

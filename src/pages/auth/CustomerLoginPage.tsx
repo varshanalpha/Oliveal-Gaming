@@ -251,3 +251,4 @@ export const CustomerLoginPage: React.FC = () => {
     </AuthLayout>
   );
 };
+

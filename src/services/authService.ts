@@ -271,3 +271,4 @@ export const authService = {
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
   },
 };
+

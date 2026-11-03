@@ -51,3 +51,4 @@ export interface OtpState {
   canResend: boolean;
   cooldownSeconds: number;
 }
+

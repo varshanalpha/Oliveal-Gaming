@@ -59,3 +59,4 @@ export const GoogleButton: React.FC<GoogleButtonProps> = ({
     </button>
   );
 };
+

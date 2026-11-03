@@ -219,3 +219,4 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ screenType, badgeLabel, 
     </div>
   );
 };
+
