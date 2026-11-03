@@ -17,3 +17,4 @@ export async function getBookingSteps(): Promise<BookingStep[]> {
     }, 40);
   });
 }
+

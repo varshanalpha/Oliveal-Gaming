@@ -24,3 +24,4 @@ export function useContent() {
 
   return { valuePropositions, bookingSteps, loading };
 }
+

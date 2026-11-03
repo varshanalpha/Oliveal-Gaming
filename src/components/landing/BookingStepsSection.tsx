@@ -117,3 +117,4 @@ export const BookingStepsSection: React.FC = () => {
     </section>
   );
 };
+

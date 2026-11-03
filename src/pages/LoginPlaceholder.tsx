@@ -47,3 +47,4 @@ export const LoginPlaceholder: React.FC = () => {
     </div>
   );
 };
+

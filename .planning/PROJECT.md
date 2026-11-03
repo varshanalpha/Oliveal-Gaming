@@ -34,3 +34,4 @@ Exclusively develop the public-facing landing page with high-fidelity visual des
 - Admin dashboard, matrix schedule grid, walk-in modals.
 - QR scanner and counter check-in.
 - Database tables, migrations, and backend APIs.
+

@@ -50,3 +50,4 @@ export const MOCK_FEATURED_GAMES: GameTitle[] = [
     isFeatured: true,
   },
 ];
+

@@ -24,3 +24,4 @@ export async function getStationsByType(type: StationType): Promise<Station[]> {
   const stations = MOCK_STATIONS.filter((s) => s.type === type);
   return [...stations];
 }
+

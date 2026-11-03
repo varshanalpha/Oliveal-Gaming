@@ -34,3 +34,4 @@ Plans:
 - [ ] 01-06: Value propositions ("Why Choose Oliveal") and "How Booking Works" 3-step guide.
 - [ ] 01-07: Final CTA banner and login placeholder route.
 - [ ] 01-08: Cross-browser QA, mobile responsive validation, and production build check.
+

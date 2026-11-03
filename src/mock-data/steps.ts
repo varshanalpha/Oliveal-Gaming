@@ -29,3 +29,4 @@ export const MOCK_BOOKING_STEPS: BookingStep[] = [
     highlight: 'Instant Counter QR Entry',
   },
 ];
+

@@ -46,3 +46,4 @@ export const MOCK_VALUE_PROPOSITIONS: ValueProposition[] = [
     highlightLabel: 'Round-the-clock access',
   },
 ];
+

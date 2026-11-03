@@ -8,3 +8,4 @@ export async function getFeaturedGames(): Promise<GameTitle[]> {
     }, 40);
   });
 }
+
