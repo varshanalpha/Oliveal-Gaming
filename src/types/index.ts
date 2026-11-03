@@ -1,3 +1,5 @@
+export * from './auth';
+
 export type StationType = 'ps5' | 'simulator';
 
 export interface Station {
@@ -56,4 +58,3 @@ export interface PricingRule {
     duration120: number;
   };
 }
-
