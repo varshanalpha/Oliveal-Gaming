@@ -9,3 +9,4 @@ export const announcementService = {
     return [...MOCK_ANNOUNCEMENTS];
   },
 };
+

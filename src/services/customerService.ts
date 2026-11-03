@@ -33,3 +33,4 @@ export const customerService = {
     return { ...MOCK_CUSTOMER_STATS };
   },
 };
+

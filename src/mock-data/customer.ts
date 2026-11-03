@@ -251,3 +251,4 @@ export const MOCK_PREFERENCES: CustomerPreferences = {
   notifyBookingReminders: true,
   notifyAnnouncements: true,
 };
+

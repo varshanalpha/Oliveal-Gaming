@@ -232,3 +232,4 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
     </header>
   );
 };
+

@@ -137,3 +137,4 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
     </>
   );
 };
+

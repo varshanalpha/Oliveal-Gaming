@@ -21,3 +21,4 @@ export const notificationService = {
     notifications = notifications.map((n) => ({ ...n, isRead: true }));
   },
 };
+

@@ -32,3 +32,4 @@ export const CustomerShell: React.FC<CustomerShellProps> = ({ pageTitle, childre
     </div>
   );
 };
+

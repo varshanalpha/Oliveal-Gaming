@@ -32,3 +32,4 @@ export const bookingService = {
     return found ? { ...found } : null;
   },
 };
+

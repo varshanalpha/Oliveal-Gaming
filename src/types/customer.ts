@@ -74,3 +74,4 @@ export interface CustomerPreferences {
   notifyBookingReminders: boolean;
   notifyAnnouncements: boolean;
 }
+
