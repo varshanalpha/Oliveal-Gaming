@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Home,
+  Calendar,
   Bell,
   ChevronDown,
   User,
@@ -65,7 +66,7 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-[#080711]/90 backdrop-blur-xl border-b border-purple-500/15 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <header className="sticky top-0 z-20 h-14 bg-[#080711]/90 backdrop-blur-xl border-b border-purple-500/15 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
       
       {/* Left: Mobile Menu Trigger + Breadcrumb Title */}
       <div className="flex items-center gap-3">
@@ -80,7 +81,11 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
         )}
 
         <div className="flex items-center gap-2 text-xs sm:text-sm text-zinc-400">
-          <Home className="w-4 h-4 text-purple-400 shrink-0" />
+          {pageTitle === 'Book Slot' ? (
+            <Calendar className="w-4 h-4 text-purple-400 shrink-0" />
+          ) : (
+            <Home className="w-4 h-4 text-purple-400 shrink-0" />
+          )}
           <span className="text-zinc-600">/</span>
           <span className="font-medium text-white tracking-wide">{pageTitle}</span>
         </div>

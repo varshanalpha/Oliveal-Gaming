@@ -75,3 +75,19 @@ export interface CustomerPreferences {
   notifyAnnouncements: boolean;
 }
 
+export interface BookedSlotRange {
+  id: string;
+  stationName: string;
+  startTime: string;
+  endTime: string;
+  label: string;
+  startMinutes: number;
+  endMinutes: number;
+}
+
+export interface SlotValidationResult {
+  isValid: boolean;
+  conflictSlot?: BookedSlotRange;
+  errorMessage?: string;
+}
+

@@ -10,24 +10,29 @@ import {
   X,
 } from 'lucide-react';
 import { Logo } from '../../ui/Logo';
-import sidebarControllerImg from '../../../assets/dashboard/sidebar-controller.png';
+import sidebarControllerImg from '../../../assets/dashboard/bookslot-sidebar-controller.png';
 
 interface CustomerSidebarProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
+  hideDashboard?: boolean;
 }
 
 export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
   mobileOpen = false,
   onCloseMobile,
+  hideDashboard = false,
 }) => {
   const location = useLocation();
 
-  const NAV_ITEMS = [
+  const isBookSlotPage = location.pathname === '/customer/book-slot' || hideDashboard;
+
+  const ALL_NAV_ITEMS = [
     {
       label: 'Dashboard',
       to: '/customer/dashboard',
       icon: LayoutDashboard,
+      hideOnBookSlot: true,
     },
     {
       label: 'Book Slot',
@@ -55,6 +60,10 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
       icon: HelpCircle,
     },
   ];
+
+  const NAV_ITEMS = isBookSlotPage
+    ? ALL_NAV_ITEMS.filter((item) => !item.hideOnBookSlot)
+    : ALL_NAV_ITEMS;
 
   const sidebarContent = (
     <div className="h-full flex flex-col justify-between p-4 sm:p-5 select-none relative overflow-hidden bg-[#0a0815] border-r border-purple-500/15">
@@ -108,7 +117,7 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
           />
         </div>
         <div className="text-[10px] text-zinc-500 font-mono tracking-wider text-center mt-1">
-          OLIVEAL // 24/7 LIVE
+          OLIVEAL // 24/7 GAMING
         </div>
       </div>
 

@@ -252,3 +252,110 @@ export const MOCK_PREFERENCES: CustomerPreferences = {
   notifyAnnouncements: true,
 };
 
+import { BookedSlotRange } from '../types/customer';
+
+export const MOCK_STATION_BOOKED_SLOTS: Record<string, BookedSlotRange[]> = {
+  ALPHA: [
+    {
+      id: 'bs-alpha-1',
+      stationName: 'ALPHA',
+      startTime: '07:00 PM',
+      endTime: '08:00 PM',
+      label: '07:00 PM – 08:00 PM',
+      startMinutes: 19 * 60, // 1140
+      endMinutes: 20 * 60,   // 1200
+    },
+    {
+      id: 'bs-alpha-2',
+      stationName: 'ALPHA',
+      startTime: '11:00 PM',
+      endTime: '12:00 AM',
+      label: '11:00 PM – 12:00 AM',
+      startMinutes: 23 * 60, // 1380
+      endMinutes: 24 * 60,   // 1440
+    },
+  ],
+  BETA: [
+    {
+      id: 'bs-beta-1',
+      stationName: 'BETA',
+      startTime: '06:00 PM',
+      endTime: '07:00 PM',
+      label: '06:00 PM – 07:00 PM',
+      startMinutes: 18 * 60,
+      endMinutes: 19 * 60,
+    },
+    {
+      id: 'bs-beta-2',
+      stationName: 'BETA',
+      startTime: '09:30 PM',
+      endTime: '11:00 PM',
+      label: '09:30 PM – 11:00 PM',
+      startMinutes: 21 * 60 + 30,
+      endMinutes: 23 * 60,
+    },
+  ],
+  GAMMA: [
+    {
+      id: 'bs-gamma-1',
+      stationName: 'GAMMA',
+      startTime: '08:00 PM',
+      endTime: '09:00 PM',
+      label: '08:00 PM – 09:00 PM',
+      startMinutes: 20 * 60,
+      endMinutes: 21 * 60,
+    },
+  ],
+  DELTA: [
+    {
+      id: 'bs-delta-1',
+      stationName: 'DELTA',
+      startTime: '04:00 PM',
+      endTime: '05:30 PM',
+      label: '04:00 PM – 05:30 PM',
+      startMinutes: 16 * 60,
+      endMinutes: 17 * 60 + 30,
+    },
+    {
+      id: 'bs-delta-2',
+      stationName: 'DELTA',
+      startTime: '07:00 PM',
+      endTime: '08:00 PM',
+      label: '07:00 PM – 08:00 PM',
+      startMinutes: 19 * 60,
+      endMinutes: 20 * 60,
+    },
+  ],
+  RS1: [
+    {
+      id: 'bs-rs1-1',
+      stationName: 'RS1',
+      startTime: '05:00 PM',
+      endTime: '07:00 PM',
+      label: '05:00 PM – 07:00 PM',
+      startMinutes: 17 * 60,
+      endMinutes: 19 * 60,
+    },
+    {
+      id: 'bs-rs1-2',
+      stationName: 'RS1',
+      startTime: '09:00 PM',
+      endTime: '10:30 PM',
+      label: '09:00 PM – 10:30 PM',
+      startMinutes: 21 * 60,
+      endMinutes: 22 * 60 + 30,
+    },
+  ],
+  RS2: [
+    {
+      id: 'bs-rs2-1',
+      stationName: 'RS2',
+      startTime: '06:30 PM',
+      endTime: '08:00 PM',
+      label: '06:30 PM – 08:00 PM',
+      startMinutes: 18 * 60 + 30,
+      endMinutes: 20 * 60,
+    },
+  ],
+};
+
