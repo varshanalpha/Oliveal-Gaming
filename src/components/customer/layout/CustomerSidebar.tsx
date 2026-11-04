@@ -69,7 +69,7 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
         </div>
 
         {/* Navigation Items (Matching Reference Image exact styling) */}
-        <nav className="mt-6 space-y-1.5">
+        <nav className="mt-6 space-y-2">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.to;
@@ -79,13 +79,13 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
                 key={item.label}
                 to={item.to}
                 onClick={onCloseMobile}
-                className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] transition-all duration-200 ${
                   isActive
-                    ? 'bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.4)] font-semibold'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60'
+                    ? 'bg-purple-600 text-white shadow-[0_0_20px_rgba(168,85,247,0.45)] font-bold'
+                    : 'text-zinc-400 hover:text-white hover:bg-zinc-900/60 font-medium'
                 }`}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-white' : 'text-zinc-400'}`} />
+                <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-zinc-400'}`} />
                 <span>{item.label}</span>
               </NavLink>
             );
@@ -95,14 +95,14 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
 
       {/* Bottom Visual: DualSense Controller Glow (Directly from reference image) */}
       <div className="relative pt-6 flex flex-col items-center">
-        <div className="relative w-36 h-28 flex items-center justify-center">
+        <div className="relative w-40 h-28 flex items-center justify-center">
           <img
             src={sidebarControllerImg}
             alt="PlayStation DualSense controller"
             className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"
           />
         </div>
-        <div className="text-[10px] text-zinc-500 font-mono tracking-wider text-center mt-1">
+        <div className="text-[11px] text-zinc-400 font-mono tracking-wider text-center mt-1.5 font-semibold">
           OLIVEAL // 24/7 GAMING
         </div>
       </div>

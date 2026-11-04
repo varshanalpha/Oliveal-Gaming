@@ -66,7 +66,7 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-20 h-14 bg-[#080711]/90 backdrop-blur-xl border-b border-purple-500/15 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <header className="sticky top-0 z-20 h-16 bg-[#080711]/90 backdrop-blur-xl border-b border-purple-500/15 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
       
       {/* Left: Mobile Menu Trigger + Breadcrumb Title */}
       <div className="flex items-center gap-3">
@@ -80,14 +80,14 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
           </button>
         )}
 
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-zinc-400">
+        <div className="flex items-center gap-2.5 text-sm sm:text-[15px] text-zinc-400">
           {pageTitle === 'Book Slot' ? (
-            <Calendar className="w-4 h-4 text-purple-400 shrink-0" />
+            <Calendar className="w-4.5 h-4.5 text-purple-400 shrink-0" />
           ) : (
-            <Home className="w-4 h-4 text-purple-400 shrink-0" />
+            <Home className="w-4.5 h-4.5 text-purple-400 shrink-0" />
           )}
-          <span className="text-zinc-600">/</span>
-          <span className="font-medium text-white tracking-wide">{pageTitle}</span>
+          <span className="text-zinc-600 font-semibold">/</span>
+          <span className="font-semibold text-white tracking-wide">{pageTitle}</span>
         </div>
       </div>
 
@@ -173,10 +173,10 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
               {profile?.initials || 'RV'}
             </div>
 
-            <span className="hidden sm:block text-xs font-semibold text-zinc-200">
+            <span className="hidden sm:block text-sm font-semibold text-zinc-200">
               {profile?.fullName || 'R Varshan'}
             </span>
-            <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+            <ChevronDown className="w-4 h-4 text-zinc-400" />
           </button>
 
           {/* Profile Dropdown Options */}
