@@ -5,7 +5,6 @@ import { CustomerLoginPage } from './pages/auth/CustomerLoginPage';
 import { CustomerSignupPage } from './pages/auth/CustomerSignupPage';
 import { EmailOtpVerificationPage } from './pages/auth/EmailOtpVerificationPage';
 import { AdminLoginPage } from './pages/auth/AdminLoginPage';
-import { CustomerDashboardPage } from './pages/customer/CustomerDashboardPage';
 import { BookSlotPage } from './pages/customer/BookSlotPage';
 import { MyBookingsPage } from './pages/customer/MyBookingsPage';
 import { ProfilePage } from './pages/customer/ProfilePage';
@@ -25,8 +24,8 @@ export const App: React.FC = () => {
       <Route path="/verify-email" element={<EmailOtpVerificationPage />} />
       <Route path="/admin/login" element={<AdminLoginPage />} />
 
-      {/* Customer Dashboard Experience */}
-      <Route path="/customer/dashboard" element={<CustomerDashboardPage />} />
+      {/* Customer Experience Routes */}
+      <Route path="/customer/dashboard" element={<Navigate to="/customer/book-slot" replace />} />
       <Route path="/customer/book-slot" element={<BookSlotPage />} />
       <Route path="/customer/bookings" element={<MyBookingsPage />} />
       <Route path="/customer/profile" element={<ProfilePage />} />

@@ -83,7 +83,7 @@ export const CustomerSignupPage: React.FC = () => {
       const res = await authService.loginWithGoogle();
       if (res.success) {
         // Google signup skips email OTP
-        navigate('/customer/dashboard');
+        navigate('/customer/book-slot');
       } else {
         setError(res.error || 'Google signup was cancelled.');
       }

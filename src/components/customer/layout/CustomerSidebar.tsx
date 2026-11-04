@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard,
   CalendarPlus,
   Ticket,
   UserRound,
@@ -15,25 +14,16 @@ import sidebarControllerImg from '../../../assets/dashboard/bookslot-sidebar-con
 interface CustomerSidebarProps {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
-  hideDashboard?: boolean;
 }
 
 export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
   mobileOpen = false,
   onCloseMobile,
-  hideDashboard = false,
 }) => {
   const location = useLocation();
 
-  const isBookSlotPage = location.pathname === '/customer/book-slot' || hideDashboard;
-
-  const ALL_NAV_ITEMS = [
-    {
-      label: 'Dashboard',
-      to: '/customer/dashboard',
-      icon: LayoutDashboard,
-      hideOnBookSlot: true,
-    },
+  // Exactly the 5 requested primary customer navigation items
+  const NAV_ITEMS = [
     {
       label: 'Book Slot',
       to: '/customer/book-slot',
@@ -60,10 +50,6 @@ export const CustomerSidebar: React.FC<CustomerSidebarProps> = ({
       icon: HelpCircle,
     },
   ];
-
-  const NAV_ITEMS = isBookSlotPage
-    ? ALL_NAV_ITEMS.filter((item) => !item.hideOnBookSlot)
-    : ALL_NAV_ITEMS;
 
   const sidebarContent = (
     <div className="h-full flex flex-col justify-between p-4 sm:p-5 select-none relative overflow-hidden bg-[#0a0815] border-r border-purple-500/15">

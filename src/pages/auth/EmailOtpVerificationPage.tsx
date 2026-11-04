@@ -62,7 +62,7 @@ export const EmailOtpVerificationPage: React.FC = () => {
       if (res.success) {
         setSuccessMessage('Account verified successfully! Redirecting...');
         setTimeout(() => {
-          navigate('/customer/dashboard');
+          navigate('/customer/book-slot');
         }, 1200);
       } else {
         setError(res.error || 'Verification failed.');

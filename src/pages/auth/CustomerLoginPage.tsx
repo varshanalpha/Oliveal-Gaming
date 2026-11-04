@@ -54,8 +54,8 @@ export const CustomerLoginPage: React.FC = () => {
       });
 
       if (res.success) {
-        // Successful login -> navigate to customer dashboard placeholder
-        navigate('/customer/dashboard');
+        // Successful login -> navigate to customer book slot
+        navigate('/customer/book-slot');
       } else {
         setError(res.error || 'Failed to sign in. Please verify your credentials.');
       }
@@ -72,8 +72,8 @@ export const CustomerLoginPage: React.FC = () => {
     try {
       const res = await authService.loginWithGoogle();
       if (res.success) {
-        // Direct to customer dashboard, skipping OTP
-        navigate('/customer/dashboard');
+        // Direct to customer book slot
+        navigate('/customer/book-slot');
       } else {
         setError(res.error || 'Google login was cancelled.');
       }
