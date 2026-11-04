@@ -10,7 +10,7 @@ import { MyBookingsPage } from './pages/customer/MyBookingsPage';
 import { ProfilePage } from './pages/customer/ProfilePage';
 import { SettingsPage } from './pages/customer/SettingsPage';
 import { SupportPage } from './pages/customer/SupportPage';
-import { AdminDashboardPlaceholder } from './pages/AdminDashboardPlaceholder';
+import { AdminBookingsPage } from './pages/admin/AdminBookingsPage';
 
 export const App: React.FC = () => {
   return (
@@ -32,8 +32,10 @@ export const App: React.FC = () => {
       <Route path="/customer/settings" element={<SettingsPage />} />
       <Route path="/customer/support" element={<SupportPage />} />
 
-      {/* Admin Post-Auth Entry Point (Scope reserved for Phase 4) */}
-      <Route path="/admin/dashboard" element={<AdminDashboardPlaceholder />} />
+      {/* Admin Experience Routes */}
+      <Route path="/admin" element={<Navigate to="/admin/bookings" replace />} />
+      <Route path="/admin/dashboard" element={<Navigate to="/admin/bookings" replace />} />
+      <Route path="/admin/bookings" element={<AdminBookingsPage />} />
 
       {/* Fallback to Home */}
       <Route path="*" element={<Navigate to="/" replace />} />

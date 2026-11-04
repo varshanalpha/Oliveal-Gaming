@@ -42,8 +42,8 @@ export const AdminLoginPage: React.FC = () => {
       });
 
       if (res.success) {
-        // Navigates to admin operations dashboard placeholder
-        navigate('/admin/dashboard');
+        // Navigates to admin bookings management
+        navigate('/admin/bookings');
       } else {
         setError(res.error || 'Failed to authenticate administrator.');
       }
