@@ -76,3 +76,4 @@ The Oliveal Gaming Zone frontend has been fully integrated with live Supabase Au
   - `/admin/bookings` unauthorized access cleanly redirects to `/admin/login`.
   - `/signup`, `/login`, `/admin/login`, `/verify-email`, `/auth/callback` render complete form inputs and brand aesthetics.
   - Secret integrity: `.env` is ignored by Git, `.env.example` provides documentation without keys.
+

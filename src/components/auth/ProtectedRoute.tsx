@@ -75,3 +75,4 @@ export const RequireAdmin: React.FC<{ children: React.ReactNode }> = ({ children
 
   return <>{children}</>;
 };
+
