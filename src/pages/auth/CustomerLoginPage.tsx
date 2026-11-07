@@ -79,7 +79,8 @@ export const CustomerLoginPage: React.FC = () => {
     setError(null);
     setGoogleLoading(true);
     try {
-      const res = await loginWithGoogle();
+      // Pass portal origin so the OAuth callback enforces customer-only role
+      const res = await loginWithGoogle('customer');
       if (!res.success) {
         setError(res.error || 'Google login was cancelled.');
       }

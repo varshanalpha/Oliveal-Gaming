@@ -24,7 +24,7 @@ interface AuthContextType {
   resendOtp: (email: string) => Promise<{ success: boolean; message?: string; error?: string }>;
   loginCustomer: (payload: LoginPayload) => Promise<AuthResponse<CustomerUser>>;
   loginAdmin: (payload: LoginPayload) => Promise<AuthResponse<AdminUser>>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: (portalOrigin?: 'customer' | 'admin') => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<UserProfile | null>;
 }
@@ -339,13 +339,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await supabase.auth.signOut();
         return {
           success: false,
-          error: 'Your account has been disabled. Please contact lounge support.',
+          error: 'Your account is currently inactive. Please contact lounge support.',
         };
       }
 
-      // Check role: customer portal is for customers
+      // Strict portal separation: Customer Login only admits customer-role accounts.
+      // If an admin reaches this portal, sign them out immediately and return an
+      // actionable error. Never redirect to the admin dashboard from here.
       if (userProfile.role !== 'customer') {
-        // If an admin logs into customer portal, allow access or note their role
+        await supabase.auth.signOut();
+        return {
+          success: false,
+          error: 'This is an administrator account. Please use the Admin Login portal.',
+        };
       }
 
       setProfile(userProfile);
@@ -358,7 +364,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: data.user.id,
           fullName: userProfile.fullName,
           email: data.user.email || payload.email,
-          role: 'customer',
+          role: userProfile.role,
           isEmailVerified: !!data.user.email_confirmed_at,
           avatarUrl: userProfile.avatarUrl || undefined,
           createdAt: data.user.created_at,
@@ -438,8 +444,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Google OAuth PKCE Login / Signup
-  const loginWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+  // portalOrigin tells the callback which portal triggered this flow so it can
+  // enforce the correct role check on return.
+  const loginWithGoogle = async (portalOrigin: 'customer' | 'admin' = 'customer'): Promise<{ success: boolean; error?: string }> => {
     try {
+      // Persist portal origin so the callback page can read it after the redirect
+      localStorage.setItem('oliveal_oauth_portal', portalOrigin);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -448,6 +459,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
+        localStorage.removeItem('oliveal_oauth_portal');
         return {
           success: false,
           error: error.message,
@@ -456,6 +468,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: true };
     } catch {
+      localStorage.removeItem('oliveal_oauth_portal');
       return {
         success: false,
         error: 'Failed to initiate Google authentication.',

@@ -4,10 +4,15 @@ import { Loader2, AlertCircle, Gamepad2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../hooks/useAuth';
 
+// Key used to persist which portal triggered the Google OAuth flow.
+// Set by CustomerLoginPage or AdminLoginPage before the OAuth redirect, read here on return.
+const OAUTH_PORTAL_KEY = 'oliveal_oauth_portal';
+
 export const AuthCallbackPage: React.FC = () => {
   const navigate = useNavigate();
-  const { refreshProfile } = useAuth();
+  const { refreshProfile, logout } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const [loginFallbackHref, setLoginFallbackHref] = useState('/login');
 
   useEffect(() => {
     let isSubscribed = true;
@@ -54,7 +59,7 @@ export const AuthCallbackPage: React.FC = () => {
         }
 
         await handleRedirect();
-      } catch (err) {
+      } catch {
         if (isSubscribed) {
           setError('Failed to complete authentication. Please try again.');
         }
@@ -62,14 +67,40 @@ export const AuthCallbackPage: React.FC = () => {
     };
 
     const handleRedirect = async () => {
+      // Read which portal initiated this OAuth flow
+      const portalOrigin = (localStorage.getItem(OAUTH_PORTAL_KEY) || 'customer') as 'customer' | 'admin';
+      localStorage.removeItem(OAUTH_PORTAL_KEY);
+
       const userProfile = await refreshProfile();
 
       if (!isSubscribed) return;
 
-      if (userProfile?.role === 'admin') {
-        navigate('/admin/bookings', { replace: true });
-      } else {
+      if (!userProfile) {
+        setError('Unable to load your account profile. Please contact support.');
+        setLoginFallbackHref(portalOrigin === 'admin' ? '/admin/login' : '/login');
+        return;
+      }
+
+      // Enforce strict portal ↔ role match
+      if (portalOrigin === 'customer') {
+        if (userProfile.role !== 'customer') {
+          // Admin tried to authenticate through customer Google sign-in — reject it
+          await logout();
+          setLoginFallbackHref('/admin/login');
+          setError('This is an administrator account. Please use the Admin Login portal.');
+          return;
+        }
         navigate('/customer/book-slot', { replace: true });
+      } else {
+        // portalOrigin === 'admin'
+        if (userProfile.role !== 'admin' || userProfile.status !== 'active') {
+          // Customer tried to authenticate through admin Google sign-in — reject it
+          await logout();
+          setLoginFallbackHref('/admin/login');
+          setError('You are not authorized to access the Admin Portal.');
+          return;
+        }
+        navigate('/admin/bookings', { replace: true });
       }
     };
 
@@ -78,7 +109,7 @@ export const AuthCallbackPage: React.FC = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [navigate, refreshProfile]);
+  }, [navigate, refreshProfile, logout]);
 
   return (
     <div className="min-h-screen bg-[#080610] text-white flex flex-col items-center justify-center p-4">
@@ -90,13 +121,13 @@ export const AuthCallbackPage: React.FC = () => {
         </div>
 
         {error ? (
-          <div className="space-y-4">
+          <div className="space-y-4 w-full">
             <div className="p-3 rounded-xl bg-red-950/60 border border-red-500/40 text-red-200 text-sm flex items-center gap-2.5 text-left">
               <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
               <span>{error}</span>
             </div>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate(loginFallbackHref)}
               className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-all cursor-pointer"
             >
               Back to Login

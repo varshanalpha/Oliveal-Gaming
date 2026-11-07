@@ -36,23 +36,21 @@ export const RequireAuth: React.FC<{ children: React.ReactNode }> = ({ children 
 };
 
 /**
- * Route guard requiring an active customer profile
+ * Route guard requiring an active customer profile.
+ * Admins visiting customer routes are redirected to their own login page,
+ * NOT silently forwarded to the admin dashboard — that would bypass the
+ * portal-specific login check that is the user's UX control point.
  */
 export const RequireCustomer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, isCustomer, isAdmin, loading } = useAuth();
+  const { isAuthenticated, isCustomer, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !isCustomer) {
     return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  // If authenticated as admin, redirect to admin operations
-  if (isAdmin && !isCustomer) {
-    return <Navigate to="/admin/bookings" replace />;
   }
 
   return <>{children}</>;
