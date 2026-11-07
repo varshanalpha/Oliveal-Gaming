@@ -34,3 +34,4 @@ export interface QRVerificationResponse {
   existingCheckInTime?: string;
   decodedPayload?: string;
 }
+

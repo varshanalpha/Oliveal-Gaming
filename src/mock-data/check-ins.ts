@@ -47,3 +47,4 @@ export const INITIAL_RECENT_CHECK_INS: CheckInRecord[] = [
     status: 'checked_in',
   },
 ];
+

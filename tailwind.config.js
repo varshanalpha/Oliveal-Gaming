@@ -47,6 +47,7 @@ export default {
         'float-slow': 'float 6s ease-in-out infinite',
         'float-delayed': 'float 6s ease-in-out 3s infinite',
         'glow-pulse': 'glowPulse 4s ease-in-out infinite',
+        'laser-scan': 'laserScan 2.2s linear infinite',
       },
       keyframes: {
         pulseSubtle: {
@@ -60,6 +61,11 @@ export default {
         glowPulse: {
           '0%, 100%': { filter: 'drop-shadow(0 0 15px rgba(168, 85, 247, 0.4))' },
           '50%': { filter: 'drop-shadow(0 0 28px rgba(168, 85, 247, 0.7))' },
+        },
+        laserScan: {
+          '0%': { transform: 'translateY(16px)' },
+          '50%': { transform: 'translateY(214px)' },
+          '100%': { transform: 'translateY(16px)' },
         },
       },
     },

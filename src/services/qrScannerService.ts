@@ -59,3 +59,4 @@ export const decodeQRFromFile = async (file: File): Promise<string> => {
     reader.readAsDataURL(file);
   });
 };
+

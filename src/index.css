@@ -61,5 +61,30 @@
   .neon-border-glow {
     box-shadow: 0 0 15px rgba(168, 85, 247, 0.35);
   }
+
+  /* Professional QR Laser Scanning Line Animation */
+  @keyframes qrLaserScan {
+    0% {
+      top: 6%;
+    }
+    50% {
+      top: 94%;
+    }
+    100% {
+      top: 6%;
+    }
+  }
+
+  .animate-qr-laser {
+    animation: qrLaserScan 2.2s linear infinite;
+    will-change: top;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-qr-laser {
+      animation: none !important;
+      top: 50% !important;
+    }
+  }
 }
 

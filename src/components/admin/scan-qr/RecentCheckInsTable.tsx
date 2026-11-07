@@ -118,3 +118,4 @@ export const RecentCheckInsTable: React.FC<RecentCheckInsTableProps> = ({ checkI
     </div>
   );
 };
+

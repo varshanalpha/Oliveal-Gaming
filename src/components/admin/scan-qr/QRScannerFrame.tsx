@@ -211,11 +211,27 @@ export const QRScannerFrame: React.FC<QRScannerFrameProps> = ({
           {/* Bottom-Left */}
           <div className="absolute bottom-0 left-0 w-8 h-8 border-b-[3.5px] border-l-[3.5px] border-fuchsia-400 rounded-bl-xl shadow-[0_0_12px_rgba(232,121,249,0.85)]" />
           {/* Bottom-Right */}
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3.5px] border-r-[3.5px] border-fuchsia-400 rounded-tr-xl shadow-[0_0_12px_rgba(232,121,249,0.85)]" />
-
-          {/* Animated Scanning Laser Line */}
-          <div className="absolute inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-fuchsia-400 to-transparent shadow-[0_0_15px_rgba(232,121,249,1)] animate-scan-bounce" />
+          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-[3.5px] border-r-[3.5px] border-fuchsia-400 rounded-br-xl shadow-[0_0_12px_rgba(232,121,249,0.85)]" />
         </div>
+
+        {/* Animated Laser Scanning Line */}
+        {!isVerifying && (
+          <div
+            className="pointer-events-none absolute top-0 inset-x-5 z-20 flex flex-col items-center animate-laser-scan motion-reduce:animate-none motion-reduce:top-1/2"
+            aria-hidden="true"
+          >
+            {/* Soft luminous ambient flare */}
+            <div className="h-3.5 w-full bg-gradient-to-r from-transparent via-fuchsia-500/25 to-transparent blur-[2.5px]" />
+            {/* Primary high-intensity 2.5px laser line with white-pink highlight core */}
+            <div
+              className="h-[2.5px] w-full rounded-full bg-gradient-to-r from-transparent via-fuchsia-100 via-50% to-transparent -mt-2"
+              style={{
+                boxShadow:
+                  '0 0 6px rgba(255, 255, 255, 0.95), 0 0 12px rgba(232, 121, 249, 0.95), 0 0 22px rgba(168, 85, 247, 0.75)',
+              }}
+            />
+          </div>
+        )}
 
         {/* Center Prompt & Controls */}
         <div className="relative z-30 flex flex-col items-center justify-center space-y-2">
