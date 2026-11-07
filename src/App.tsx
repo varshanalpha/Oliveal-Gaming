@@ -43,6 +43,7 @@ export const App: React.FC = () => {
       <Route path="/admin/on-spot-booking" element={<Navigate to="/admin/on-spot" replace />} />
       <Route path="/admin/scan-qr" element={<AdminScanQRPage />} />
       <Route path="/admin/scan" element={<Navigate to="/admin/scan-qr" replace />} />
+      <Route path="/admin/reports" element={<Navigate to="/admin/bookings" replace />} />
       <Route path="/admin/settings" element={<AdminSettingsPage />} />
 
       {/* Fallback to Home */}

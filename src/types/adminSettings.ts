@@ -28,3 +28,4 @@ export interface SaveSettingsResponse {
   settings: AdminSettings;
   message?: string;
 }
+

@@ -86,3 +86,4 @@ export const NotificationsCard: React.FC<NotificationsCardProps> = ({
     </div>
   );
 };
+

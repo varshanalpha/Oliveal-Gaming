@@ -4,7 +4,6 @@ import {
   CalendarDays,
   Zap,
   ScanQrCode,
-  ChartNoAxesColumnIncreasing,
   Settings,
   Gamepad2,
   X,
@@ -22,7 +21,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 }) => {
   const location = useLocation();
 
-  // Exactly the 5 requested primary admin navigation items
+  // The 4 primary admin navigation items
   const NAV_ITEMS = [
     {
       label: 'Bookings',
@@ -38,11 +37,6 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'Scan QR',
       to: '/admin/scan-qr',
       icon: ScanQrCode,
-    },
-    {
-      label: 'Reports',
-      to: '/admin/reports',
-      icon: ChartNoAxesColumnIncreasing,
     },
     {
       label: 'Settings',
