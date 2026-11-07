@@ -3,17 +3,17 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Mail, ArrowLeft, RotateCw, Edit3, AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { OtpInput } from '../../components/auth/OtpInput';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../hooks/useAuth';
 
 export const EmailOtpVerificationPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { verifyOtp, resendOtp } = useAuth();
 
   // Retrieve email from navigation state or pending signup or default
   const initialEmail =
     (location.state as { email?: string })?.email ||
-    authService.getPendingSignup()?.email ||
-    'varshan.gamer@gmail.com';
+    '';
 
   const [email, setEmail] = useState(initialEmail);
   const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -57,15 +57,15 @@ export const EmailOtpVerificationPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await authService.verifySignupOtp({ email, otp });
+      const res = await verifyOtp({ email: email.trim().toLowerCase(), otp: otp.trim() });
 
       if (res.success) {
         setSuccessMessage('Account verified successfully! Redirecting...');
         setTimeout(() => {
-          navigate('/customer/book-slot');
+          navigate('/customer/book-slot', { replace: true });
         }, 1200);
       } else {
-        setError(res.error || 'Verification failed.');
+        setError(res.error || 'Verification failed. Please check the code and try again.');
       }
     } catch {
       setError('An error occurred during verification. Please try again.');
@@ -80,9 +80,9 @@ export const EmailOtpVerificationPage: React.FC = () => {
     setResending(true);
 
     try {
-      const res = await authService.resendSignupOtp(email);
+      const res = await resendOtp(email.trim().toLowerCase());
       if (res.success) {
-        setSuccessMessage('Fresh verification code sent to your email.');
+        setSuccessMessage(res.message || 'Fresh verification code sent to your email.');
         setCountdown(60);
       } else {
         setError(res.error || 'Failed to resend code.');

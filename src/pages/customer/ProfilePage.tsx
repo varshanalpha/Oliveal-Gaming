@@ -12,10 +12,13 @@ import {
 } from 'lucide-react';
 import { CustomerShell } from '../../components/customer/layout/CustomerShell';
 import { customerService } from '../../services/customerService';
+import { useAuth } from '../../hooks/useAuth';
+import { supabase } from '../../lib/supabase';
 import { CustomerProfile, CustomerStatistics } from '../../types/customer';
 import { MOCK_CUSTOMER_PROFILE, MOCK_CUSTOMER_STATS } from '../../mock-data/customer';
 
 export const ProfilePage: React.FC = () => {
+  const { user, profile: authProfile, refreshProfile } = useAuth();
   const [profile, setProfile] = useState<CustomerProfile>(MOCK_CUSTOMER_PROFILE);
   const [stats, setStats] = useState<CustomerStatistics>(MOCK_CUSTOMER_STATS);
 
@@ -29,25 +32,86 @@ export const ProfilePage: React.FC = () => {
   useEffect(() => {
     customerService.getCustomerProfile().then((data) => {
       setProfile(data);
-      setFullName(data.fullName);
-      setEmail(data.email);
-      setPhone(data.phone);
+      if (!authProfile) {
+        setFullName(data.fullName);
+        setEmail(data.email);
+        setPhone(data.phone);
+      }
     });
     customerService.getCustomerStatistics().then(setStats);
   }, []);
 
+  useEffect(() => {
+    if (authProfile) {
+      const derivedInitials = authProfile.fullName
+        ? authProfile.fullName
+            .split(' ')
+            .map((n: string) => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2)
+        : 'OG';
+
+      const memberDate = authProfile.createdAt
+        ? new Date(authProfile.createdAt).toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric',
+          })
+        : 'November 2026';
+
+      const userEmail = authProfile.email || user?.email || MOCK_CUSTOMER_PROFILE.email;
+
+      setProfile((prev) => ({
+        ...prev,
+        id: authProfile.id,
+        fullName: authProfile.fullName || 'Gamer',
+        email: userEmail,
+        phone: authProfile.phone || '',
+        initials: derivedInitials,
+        memberSince: memberDate,
+      }));
+      setFullName(authProfile.fullName || '');
+      setEmail(userEmail);
+      setPhone(authProfile.phone || '');
+    }
+  }, [authProfile, user]);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    const updated = await customerService.updateCustomerProfile({
-      fullName,
-      phone,
-    });
-    setProfile(updated);
-    setIsSubmitting(false);
-    setIsEditing(false);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+
+    try {
+      if (user?.id) {
+        await supabase
+          .from('profiles')
+          .update({
+            full_name: fullName.trim(),
+            phone: phone.trim(),
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+
+        await refreshProfile();
+      }
+
+      const updated = await customerService.updateCustomerProfile({
+        fullName,
+        phone,
+      });
+      setProfile((prev) => ({
+        ...prev,
+        fullName: updated.fullName,
+        phone: updated.phone,
+        initials: updated.initials,
+      }));
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+    } finally {
+      setIsSubmitting(false);
+      setIsEditing(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    }
   };
 
   return (

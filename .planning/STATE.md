@@ -30,4 +30,5 @@ Progress: [████░░░░░░] 43%
 |---|---|---|---|
 | `admin-settings-page` | Implement Admin Settings page strictly matching reference image | Complete ✓ | 2026-11-07 |
 | `auth-schema` | Authentication frontend audit and Supabase database schema design | Complete ✓ | 2026-11-07 |
+| `auth-frontend-integration` | Supabase Auth frontend integration with customer and admin portals | Complete ✓ | 2026-11-07 |
 

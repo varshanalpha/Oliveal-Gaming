@@ -4,10 +4,11 @@ import { Mail, Lock, Eye, EyeOff, User, AlertCircle, Loader2 } from 'lucide-reac
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { GoogleButton } from '../../components/auth/GoogleButton';
 import { PasswordStrengthMeter } from '../../components/auth/PasswordStrengthMeter';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../hooks/useAuth';
 
 export const CustomerSignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const { signupCustomer, loginWithGoogle } = useAuth();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -55,7 +56,7 @@ export const CustomerSignupPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await authService.registerCustomer({
+      const res = await signupCustomer({
         fullName,
         email,
         password,
@@ -65,7 +66,7 @@ export const CustomerSignupPage: React.FC = () => {
 
       if (res.success) {
         // Navigate to Email OTP Verification Screen
-        navigate('/verify-email', { state: { email: email.trim() } });
+        navigate('/verify-email', { state: { email: email.trim().toLowerCase() } });
       } else {
         setError(res.error || 'Failed to create account.');
       }
@@ -80,11 +81,8 @@ export const CustomerSignupPage: React.FC = () => {
     setError(null);
     setGoogleLoading(true);
     try {
-      const res = await authService.loginWithGoogle();
-      if (res.success) {
-        // Google signup skips email OTP
-        navigate('/customer/book-slot');
-      } else {
+      const res = await loginWithGoogle();
+      if (!res.success) {
         setError(res.error || 'Google signup was cancelled.');
       }
     } catch {

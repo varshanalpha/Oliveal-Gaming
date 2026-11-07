@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowLeft, AlertCircle, Loader2, ShieldCheck } from 'lucide-react';
 import { AuthLayout } from '../../components/auth/AuthLayout';
-import { authService, DEFAULT_MOCK_ADMIN } from '../../services/authService';
+import { useAuth } from '../../hooks/useAuth';
+import { DEFAULT_MOCK_ADMIN } from '../../services/authService';
 
 export const AdminLoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { loginAdmin } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +37,7 @@ export const AdminLoginPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await authService.loginAdmin({
+      const res = await loginAdmin({
         email,
         password,
         rememberMe,
@@ -55,8 +57,8 @@ export const AdminLoginPage: React.FC = () => {
   };
 
   const handleFillDemoAdmin = () => {
-    setEmail(DEFAULT_MOCK_ADMIN.email);
-    setPassword(DEFAULT_MOCK_ADMIN.password);
+    setEmail('admin@oliveal.com');
+    setPassword('AdminPassword123!');
   };
 
   return (

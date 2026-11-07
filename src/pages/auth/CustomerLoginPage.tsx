@@ -3,10 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, User, Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { AuthLayout } from '../../components/auth/AuthLayout';
 import { GoogleButton } from '../../components/auth/GoogleButton';
-import { authService, DEFAULT_MOCK_CUSTOMER } from '../../services/authService';
+import { useAuth } from '../../hooks/useAuth';
 
 export const CustomerLoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { loginCustomer, loginWithGoogle } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +20,7 @@ export const CustomerLoginPage: React.FC = () => {
 
   useEffect(() => {
     // Populate remembered email if present
-    const remembered = authService.getRememberedEmail();
+    const remembered = localStorage.getItem('oliveal_remembered_email');
     if (remembered) {
       setEmail(remembered);
       setRememberMe(true);
@@ -47,15 +48,23 @@ export const CustomerLoginPage: React.FC = () => {
 
     setLoading(true);
     try {
-      const res = await authService.loginCustomer({
+      if (rememberMe) {
+        localStorage.setItem('oliveal_remembered_email', email.trim().toLowerCase());
+      } else {
+        localStorage.removeItem('oliveal_remembered_email');
+      }
+
+      const res = await loginCustomer({
         email,
         password,
         rememberMe,
       });
 
       if (res.success) {
-        // Successful login -> navigate to customer book slot
         navigate('/customer/book-slot');
+      } else if (res.requiresEmailConfirmation) {
+        // Guide user to email verification
+        navigate('/verify-email', { state: { email: email.trim().toLowerCase() } });
       } else {
         setError(res.error || 'Failed to sign in. Please verify your credentials.');
       }
@@ -70,11 +79,8 @@ export const CustomerLoginPage: React.FC = () => {
     setError(null);
     setGoogleLoading(true);
     try {
-      const res = await authService.loginWithGoogle();
-      if (res.success) {
-        // Direct to customer book slot
-        navigate('/customer/book-slot');
-      } else {
+      const res = await loginWithGoogle();
+      if (!res.success) {
         setError(res.error || 'Google login was cancelled.');
       }
     } catch {
@@ -85,8 +91,8 @@ export const CustomerLoginPage: React.FC = () => {
   };
 
   const handleFillDemo = () => {
-    setEmail(DEFAULT_MOCK_CUSTOMER.email);
-    setPassword(DEFAULT_MOCK_CUSTOMER.password);
+    setEmail('varshanxalpha90@gmail.com');
+    setPassword('TestPassword123!');
   };
 
   return (

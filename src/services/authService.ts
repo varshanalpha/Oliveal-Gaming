@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase';
 import {
   AuthResponse,
   CustomerUser,
@@ -5,6 +6,7 @@ import {
   SignupPayload,
   LoginPayload,
   OtpVerificationPayload,
+  UserProfile,
 } from '../types/auth';
 
 const STORAGE_KEYS = {
@@ -13,77 +15,104 @@ const STORAGE_KEYS = {
   REMEMBERED_EMAIL: 'oliveal_remembered_email',
 };
 
-// Default Mock Admin Credential
+// Default Demo Credentials
 export const DEFAULT_MOCK_ADMIN = {
   email: 'admin@oliveal.com',
   password: 'AdminPassword123!',
 };
 
-// Default Mock Customer Credential
 export const DEFAULT_MOCK_CUSTOMER = {
-  email: 'gamer@oliveal.com',
-  password: 'GamerPassword123!',
+  email: 'varshanxalpha90@gmail.com',
+  password: 'TestPassword123!',
 };
 
-// Helper delay to simulate real server latency
-const delay = (ms = 600) => new Promise((resolve) => setTimeout(resolve, ms));
+// Helper to fetch user profile from Supabase profiles table
+export const fetchProfileById = async (userId: string, email?: string): Promise<UserProfile | null> => {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (data && !error) {
+        return {
+          id: data.id,
+          fullName: data.full_name || 'Gamer',
+          email: email || '',
+          avatarUrl: data.avatar_url,
+          role: data.role,
+          status: data.status,
+          createdAt: data.created_at,
+          updatedAt: data.updated_at,
+        };
+      }
+    } catch {
+      // Retry
+    }
+    await new Promise((res) => setTimeout(res, 300));
+  }
+  return null;
+};
 
 export const authService = {
   /**
-   * Register a new customer via email and password.
-   * Returns success and navigates to OTP verification.
+   * Register a new customer via email and password using Supabase Auth.
    */
   async registerCustomer(payload: SignupPayload): Promise<AuthResponse<CustomerUser>> {
-    await delay(700);
+    const email = payload.email.trim().toLowerCase();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: payload.password,
+      options: {
+        data: {
+          full_name: payload.fullName.trim(),
+        },
+      },
+    });
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(payload.email)) {
-      return { success: false, error: 'Please enter a valid email address.' };
+    if (error) {
+      return { success: false, error: error.message };
     }
 
-    if (!payload.fullName.trim()) {
-      return { success: false, error: 'Full name is required.' };
+    if (data.user) {
+      const isConfirmed = !!data.user.email_confirmed_at;
+      const customer: CustomerUser = {
+        id: data.user.id,
+        fullName: payload.fullName.trim(),
+        email: data.user.email || email,
+        role: 'customer',
+        isEmailVerified: isConfirmed,
+        createdAt: data.user.created_at,
+      };
+
+      localStorage.setItem(STORAGE_KEYS.PENDING_SIGNUP, JSON.stringify(customer));
+
+      return {
+        success: true,
+        user: customer,
+        requiresEmailConfirmation: !isConfirmed,
+        message: 'Verification code sent to your email.',
+      };
     }
 
-    if (payload.password.length < 8) {
-      return { success: false, error: 'Password must be at least 8 characters.' };
-    }
-
-    if (payload.password !== payload.confirmPassword) {
-      return { success: false, error: 'Passwords do not match.' };
-    }
-
-    if (!payload.agreedToTerms) {
-      return { success: false, error: 'You must agree to the Terms of Service and Privacy Policy.' };
-    }
-
-    // Save pending registration for OTP step
-    const pendingCustomer: CustomerUser = {
-      id: `usr-${Date.now()}`,
-      fullName: payload.fullName.trim(),
-      email: payload.email.trim().toLowerCase(),
-      role: 'customer',
-      isEmailVerified: false,
-      createdAt: new Date().toISOString(),
-    };
-
-    localStorage.setItem(STORAGE_KEYS.PENDING_SIGNUP, JSON.stringify(pendingCustomer));
-
-    return {
-      success: true,
-      user: pendingCustomer,
-      message: 'Verification code sent to your email.',
-    };
+    return { success: false, error: 'Registration failed.' };
   },
 
   /**
-   * Resend signup verification OTP.
+   * Resend signup verification OTP using Supabase Auth.
    */
   async resendSignupOtp(email: string): Promise<{ success: boolean; message?: string; error?: string }> {
-    await delay(500);
-    if (!email) {
-      return { success: false, error: 'Email address missing.' };
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: email.trim().toLowerCase(),
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
     }
+
     return {
       success: true,
       message: `A fresh 6-digit verification code has been sent to ${email}.`,
@@ -91,78 +120,102 @@ export const authService = {
   },
 
   /**
-   * Verify the 6-digit signup OTP.
-   * Test code: '482916' (as shown in design) or any valid 6-digit code.
-   * '000000' simulates an invalid code error.
-   * '999999' simulates an expired code error.
+   * Verify the 6-digit signup OTP using Supabase Auth.
    */
   async verifySignupOtp({ email, otp }: OtpVerificationPayload): Promise<AuthResponse<CustomerUser>> {
-    await delay(700);
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanToken = otp.trim();
 
-    if (otp.length !== 6) {
-      return { success: false, error: 'Please enter the complete 6-digit code.' };
+    let { data, error } = await supabase.auth.verifyOtp({
+      email: cleanEmail,
+      token: cleanToken,
+      type: 'signup',
+    });
+
+    if (error) {
+      const retry = await supabase.auth.verifyOtp({
+        email: cleanEmail,
+        token: cleanToken,
+        type: 'email',
+      });
+      data = retry.data;
+      error = retry.error;
     }
 
-    if (otp === '000000') {
-      return { success: false, error: 'Invalid verification code. Please check your email and try again.' };
-    }
-
-    if (otp === '999999') {
-      return { success: false, error: 'This verification code has expired. Please request a new code.' };
-    }
-
-    const pendingRaw = localStorage.getItem(STORAGE_KEYS.PENDING_SIGNUP);
-    let customer: CustomerUser;
-
-    if (pendingRaw) {
-      customer = JSON.parse(pendingRaw);
-      customer.isEmailVerified = true;
-    } else {
-      customer = {
-        id: `usr-${Date.now()}`,
-        fullName: 'Oliveal Gamer',
-        email: email.toLowerCase(),
-        role: 'customer',
-        isEmailVerified: true,
-        createdAt: new Date().toISOString(),
+    if (error || !data.user) {
+      return {
+        success: false,
+        error: error?.message || 'Invalid or expired verification code.',
       };
     }
 
+    const profile = await fetchProfileById(data.user.id, data.user.email);
+    const customerUser: CustomerUser = {
+      id: data.user.id,
+      fullName: profile?.fullName || data.user.user_metadata?.full_name || 'Gamer',
+      email: data.user.email || cleanEmail,
+      role: 'customer',
+      isEmailVerified: true,
+      avatarUrl: profile?.avatarUrl || undefined,
+      createdAt: data.user.created_at,
+    };
+
     localStorage.removeItem(STORAGE_KEYS.PENDING_SIGNUP);
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(customer));
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(customerUser));
 
     return {
       success: true,
-      user: customer,
-      token: `mock-jwt-customer-${Date.now()}`,
-      message: 'Email verified successfully! Welcome to Oliveal Gaming Zone.',
+      user: customerUser,
+      profile: profile || undefined,
+      token: data.session?.access_token,
+      message: 'Email verified successfully!',
     };
   },
 
   /**
-   * Customer Login via email and password.
+   * Customer Login via email and password using Supabase Auth.
    */
   async loginCustomer(payload: LoginPayload): Promise<AuthResponse<CustomerUser>> {
-    await delay(700);
-
     const email = payload.email.trim().toLowerCase();
-    const password = payload.password;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: payload.password,
+    });
 
-    if (!email || !password) {
-      return { success: false, error: 'Please provide both email and password.' };
+    if (error) {
+      const msg = error.message.toLowerCase();
+      if (msg.includes('email not confirmed') || msg.includes('unconfirmed')) {
+        return {
+          success: false,
+          requiresEmailConfirmation: true,
+          error: 'Please verify your email address before logging in.',
+        };
+      }
+      return { success: false, error: error.message };
     }
 
-    if (email === 'invalid@oliveal.com' || password === 'wrongpass') {
-      return { success: false, error: 'Invalid email or password. Please try again.' };
+    if (!data.user) {
+      return { success: false, error: 'Sign in failed.' };
     }
 
-    const user: CustomerUser = {
-      id: 'usr-customer-101',
-      fullName: email.split('@')[0].toUpperCase(),
-      email: email,
+    const profile = await fetchProfileById(data.user.id, data.user.email);
+    if (!profile) {
+      return { success: false, error: 'User profile not found.' };
+    }
+
+    if (profile.status === 'disabled') {
+      await supabase.auth.signOut();
+      return { success: false, error: 'Your account has been disabled.' };
+    }
+
+    const customerUser: CustomerUser = {
+      id: data.user.id,
+      fullName: profile.fullName,
+      email: data.user.email || email,
       role: 'customer',
-      isEmailVerified: true,
-      createdAt: new Date().toISOString(),
+      isEmailVerified: !!data.user.email_confirmed_at,
+      avatarUrl: profile.avatarUrl || undefined,
+      createdAt: data.user.created_at,
     };
 
     if (payload.rememberMe) {
@@ -171,74 +224,72 @@ export const authService = {
       localStorage.removeItem(STORAGE_KEYS.REMEMBERED_EMAIL);
     }
 
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(customerUser));
 
     return {
       success: true,
-      user,
-      token: `mock-jwt-customer-${Date.now()}`,
+      user: customerUser,
+      profile,
+      token: data.session?.access_token,
     };
   },
 
   /**
-   * Customer Google OAuth Simulation.
-   * Directly authenticates and skips OTP as per specification.
+   * Google OAuth Login/Signup using Supabase Auth.
    */
   async loginWithGoogle(): Promise<AuthResponse<CustomerUser>> {
-    await delay(1000);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
 
-    const user: CustomerUser = {
-      id: 'usr-google-202',
-      fullName: 'Alex Vance',
-      email: 'alex.gamer@gmail.com',
-      role: 'customer',
-      isEmailVerified: true,
-      avatarUrl: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
-      createdAt: new Date().toISOString(),
-    };
+    if (error) {
+      return { success: false, error: error.message };
+    }
 
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-
-    return {
-      success: true,
-      user,
-      token: `mock-jwt-google-${Date.now()}`,
-    };
+    return { success: true };
   },
 
   /**
-   * Admin Login via email and password only.
-   * Strictly NO Google OAuth, NO signup, NO role creation.
+   * Admin Login via email and password with strict database-backed role verification.
    */
   async loginAdmin(payload: LoginPayload): Promise<AuthResponse<AdminUser>> {
-    await delay(800);
-
     const email = payload.email.trim().toLowerCase();
-    const password = payload.password;
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: payload.password,
+    });
 
-    if (!email || !password) {
-      return { success: false, error: 'Admin email and password are required.' };
+    if (error) {
+      return { success: false, error: error.message || 'Invalid administrator credentials.' };
     }
 
-    // Check admin qualification
-    const isAdminDomain = email.endsWith('@oliveal.com') || email.includes('admin');
-    if (!isAdminDomain) {
+    if (!data.user) {
+      return { success: false, error: 'Admin authentication failed.' };
+    }
+
+    const profile = await fetchProfileById(data.user.id, data.user.email);
+    if (!profile || profile.role !== 'admin') {
+      await supabase.auth.signOut();
       return {
         success: false,
         error: 'Access denied. Only authorized Oliveal Gaming Zone administrators can log in here.',
       };
     }
 
-    if (password.length < 6 || password === 'wrongpass') {
-      return { success: false, error: 'Invalid admin credentials.' };
+    if (profile.status === 'disabled') {
+      await supabase.auth.signOut();
+      return { success: false, error: 'This administrator account has been disabled.' };
     }
 
     const adminUser: AdminUser = {
-      id: 'adm-ops-001',
-      fullName: 'Operations Desk Lead',
-      email: email,
+      id: data.user.id,
+      fullName: profile.fullName,
+      email: data.user.email || email,
       role: 'admin',
-      createdAt: new Date().toISOString(),
+      createdAt: data.user.created_at,
     };
 
     localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(adminUser));
@@ -246,7 +297,8 @@ export const authService = {
     return {
       success: true,
       user: adminUser,
-      token: `mock-jwt-admin-${Date.now()}`,
+      profile,
+      token: data.session?.access_token,
     };
   },
 
@@ -267,8 +319,12 @@ export const authService = {
     return localStorage.getItem(STORAGE_KEYS.REMEMBERED_EMAIL) || '';
   },
 
-  logout(): void {
+  async logout(): Promise<void> {
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // Ignore signOut errors
+    }
   },
 };
-

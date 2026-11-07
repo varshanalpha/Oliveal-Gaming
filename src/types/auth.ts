@@ -1,3 +1,18 @@
+export type UserRole = 'customer' | 'admin';
+export type UserStatus = 'active' | 'disabled';
+
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  email?: string;
+  phone?: string | null;
+  avatarUrl?: string | null;
+  role: UserRole;
+  status: UserStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CustomerUser {
   id: string;
   fullName: string;
@@ -22,8 +37,8 @@ export interface SignupPayload {
   fullName: string;
   email: string;
   password: string;
-  confirmPassword: string;
-  agreedToTerms: boolean;
+  confirmPassword?: string;
+  agreedToTerms?: boolean;
 }
 
 export interface LoginPayload {
@@ -40,9 +55,11 @@ export interface OtpVerificationPayload {
 export interface AuthResponse<T = AuthUser> {
   success: boolean;
   user?: T;
+  profile?: UserProfile;
   token?: string;
   message?: string;
   error?: string;
+  requiresEmailConfirmation?: boolean;
 }
 
 export interface OtpState {
@@ -51,4 +68,3 @@ export interface OtpState {
   canResend: boolean;
   cooldownSeconds: number;
 }
-

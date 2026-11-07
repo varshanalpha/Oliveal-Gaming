@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { customerService } from '../../../services/customerService';
 import { notificationService } from '../../../services/notificationService';
-import { authService } from '../../../services/authService';
+import { useAuth } from '../../../hooks/useAuth';
 import { CustomerProfile, NotificationItem } from '../../../types/customer';
 
 interface CustomerHeaderProps {
@@ -27,6 +27,7 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
   onOpenMobileMenu,
 }) => {
   const navigate = useNavigate();
+  const { user, profile: authProfile, logout } = useAuth();
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -52,6 +53,17 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const displayName = authProfile?.fullName || profile?.fullName || user?.email?.split('@')[0] || 'Gamer';
+  const displayEmail = authProfile?.email || profile?.email || user?.email || 'gamer@oliveal.com';
+  const displayInitials = authProfile?.fullName
+    ? authProfile.fullName
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : profile?.initials || 'OG';
+
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const handleMarkAllRead = async () => {
@@ -60,8 +72,8 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
     setNotifications(updated);
   };
 
-  const handleLogout = () => {
-    authService.logout();
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
@@ -170,11 +182,11 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
           >
             {/* Avatar Circle with Initials */}
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-700 to-indigo-600 flex items-center justify-center text-white font-display font-bold text-xs shadow-[0_0_10px_rgba(168,85,247,0.4)]">
-              {profile?.initials || 'RV'}
+              {displayInitials}
             </div>
 
             <span className="hidden sm:block text-sm font-semibold text-zinc-200">
-              {profile?.fullName || 'R Varshan'}
+              {displayName}
             </span>
             <ChevronDown className="w-4 h-4 text-zinc-400" />
           </button>
@@ -184,10 +196,10 @@ export const CustomerHeader: React.FC<CustomerHeaderProps> = ({
             <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-[#110f24] border border-purple-500/30 shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2">
               <div className="px-3 py-2 border-b border-purple-500/10">
                 <p className="text-xs font-bold text-white truncate">
-                  {profile?.fullName || 'R Varshan'}
+                  {displayName}
                 </p>
                 <p className="text-[11px] text-zinc-400 truncate">
-                  {profile?.email || 'varshan@gmail.com'}
+                  {displayEmail}
                 </p>
               </div>
 

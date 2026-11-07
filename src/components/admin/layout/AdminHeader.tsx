@@ -9,7 +9,7 @@ import {
   Settings,
   Menu,
 } from 'lucide-react';
-import { authService } from '../../../services/authService';
+import { useAuth } from '../../../hooks/useAuth';
 
 interface AdminHeaderProps {
   pageTitle: string;
@@ -21,6 +21,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
   onOpenMobileMenu,
 }) => {
   const navigate = useNavigate();
+  const { user, profile: authProfile, logout } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
@@ -40,8 +41,19 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    authService.logout();
+  const displayName = authProfile?.fullName || 'Admin';
+  const displayEmail = authProfile?.email || user?.email || 'admin@oliveal.com';
+  const displayInitials = authProfile?.fullName
+    ? authProfile.fullName
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+    : 'AD';
+
+  const handleLogout = async () => {
+    await logout();
     navigate('/admin/login');
   };
 
@@ -111,11 +123,11 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
             className="flex items-center gap-2.5 p-1 sm:px-3 sm:py-1.5 rounded-2xl bg-zinc-900/80 border border-purple-500/20 hover:border-purple-500/40 hover:bg-zinc-800/80 transition-all cursor-pointer"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-700 to-indigo-600 flex items-center justify-center text-white font-display font-bold text-xs shadow-[0_0_10px_rgba(168,85,247,0.4)]">
-              AD
+              {displayInitials}
             </div>
 
             <span className="hidden sm:block text-sm font-semibold text-zinc-200">
-              Admin
+              {displayName}
             </span>
             <ChevronDown className="w-4 h-4 text-zinc-400" />
           </button>
@@ -129,7 +141,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
                   <span>Operations Manager</span>
                 </div>
                 <p className="text-[11px] text-zinc-400 truncate mt-0.5">
-                  admin@oliveal.com
+                  {displayEmail}
                 </p>
               </div>
 

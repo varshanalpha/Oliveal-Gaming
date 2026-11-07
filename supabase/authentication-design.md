@@ -246,3 +246,4 @@ Once the SQL schema is approved and applied in the Supabase SQL Editor, the fron
 3. **Route Guards**:
    - Guard `/customer/*` routes requiring an active authenticated session.
    - Guard `/admin/*` routes requiring `profile.role === 'admin'`.
+
