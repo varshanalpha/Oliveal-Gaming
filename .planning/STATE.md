@@ -29,4 +29,5 @@ Progress: [████░░░░░░] 43%
 | Task | Description | Status | Date |
 |---|---|---|---|
 | `admin-settings-page` | Implement Admin Settings page strictly matching reference image | Complete ✓ | 2026-11-07 |
+| `auth-schema` | Authentication frontend audit and Supabase database schema design | Complete ✓ | 2026-11-07 |
 
