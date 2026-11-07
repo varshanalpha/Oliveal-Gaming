@@ -99,7 +99,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
             const isActive =
               location.pathname === item.to ||
               (item.to === '/admin/bookings' && (location.pathname === '/admin' || location.pathname === '/admin/dashboard')) ||
-              (item.to === '/admin/on-spot' && location.pathname === '/admin/on-spot-booking');
+              (item.to === '/admin/on-spot' && location.pathname === '/admin/on-spot-booking') ||
+              (item.to === '/admin/scan-qr' && location.pathname === '/admin/scan');
 
             return (
               <NavLink

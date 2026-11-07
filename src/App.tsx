@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/customer/SettingsPage';
 import { SupportPage } from './pages/customer/SupportPage';
 import { AdminBookingsPage } from './pages/admin/AdminBookingsPage';
 import { AdminOnSpotBookingPage } from './pages/admin/AdminOnSpotBookingPage';
+import { AdminScanQRPage } from './pages/admin/AdminScanQRPage';
 
 export const App: React.FC = () => {
   return (
@@ -39,6 +40,8 @@ export const App: React.FC = () => {
       <Route path="/admin/bookings" element={<AdminBookingsPage />} />
       <Route path="/admin/on-spot" element={<AdminOnSpotBookingPage />} />
       <Route path="/admin/on-spot-booking" element={<Navigate to="/admin/on-spot" replace />} />
+      <Route path="/admin/scan-qr" element={<AdminScanQRPage />} />
+      <Route path="/admin/scan" element={<Navigate to="/admin/scan-qr" replace />} />
 
       {/* Fallback to Home */}
       <Route path="*" element={<Navigate to="/" replace />} />
