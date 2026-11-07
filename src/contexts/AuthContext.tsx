@@ -350,7 +350,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await supabase.auth.signOut();
         return {
           success: false,
-          error: 'This is an administrator account. Please use the Admin Login portal.',
+          error: 'Invalid login credentials',
         };
       }
 
